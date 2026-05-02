@@ -10,7 +10,6 @@ import ChatInput from '@/components/chat/ChatInput';
 import { useChatStore } from '@/store/chatStore';
 import { useCreditStore } from '@/store/creditStore';
 import { useToastStore } from '@/store/toastStore';
-import { api } from '@/lib/axios';
 
 export default function ChatPage() {
   const { status } = useSession();
@@ -18,7 +17,7 @@ export default function ChatPage() {
   const { addToast } = useToastStore();
   
   const { conversations, activeConversationId, isTyping, setTyping, addMessage, updateMessage } = useChatStore();
-  const { model, setCredits, plan } = useCreditStore();
+  const { model, setCredits } = useCreditStore();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -97,16 +96,19 @@ export default function ChatPage() {
                   fullText += data.text;
                   updateMessage(activeConversationId, assistantMessageId, (msg) => ({ ...msg, content: fullText }));
                 }
-              } catch (e) {}
+              } catch {
+                // Ignore parse errors from incomplete chunks
+              }
             }
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      addToast(error.message, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      addToast(errorMessage, 'error');
       setTyping(false);
-      updateMessage(activeConversationId, assistantMessageId, (msg) => ({ ...msg, content: `Error: ${error.message}` }));
+      updateMessage(activeConversationId, assistantMessageId, (msg) => ({ ...msg, content: `Error: ${errorMessage}` }));
     }
   };
 

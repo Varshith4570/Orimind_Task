@@ -2,7 +2,6 @@
 
 import { useCreditStore } from '@/store/creditStore';
 import { useChatStore } from '@/store/chatStore';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { MessageSquare, Plus, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -38,7 +37,7 @@ export default function Sidebar() {
               <button
                 key={m.id}
                 onClick={() => {
-                  if (!isLocked) setModel(m.id as any, m.multiplier);
+                  if (!isLocked) setModel(m.id as 'gemini' | 'gpt' | 'claude', m.multiplier);
                   else alert("Upgrade to PRO to use this model.");
                 }}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors text-left

@@ -38,8 +38,12 @@ export default function AuthPage() {
         addToast('Successfully authenticated!', 'success');
         router.push('/chat');
       }
-    } catch (err: any) {
-      addToast(err.message || 'Authentication failed', 'error');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        addToast(err.message, 'error');
+      } else {
+        addToast('Authentication failed', 'error');
+      }
     } finally {
       setIsLoading(false);
     }
