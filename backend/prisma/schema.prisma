@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  passwordHash       String
+  plan               String         @default("FREE")
+  totalCredits       Float          @default(10.0)
+  currentPeriodEnd   DateTime?
+  subscriptions      Subscription[]
+  transactions       Transaction[]
+  sessions           Session[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+
+
+model Subscription {
+  id                     String   @id @default(uuid())
+  user                   User     @relation(fields: [userId], references: [id])
+  userId                 String
+  razorpayOrderId        String?  @unique
+  razorpaySubscriptionId String?  @unique
+  status                 String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model Transaction {
+  id             String          @id @default(uuid())
+  user           User            @relation(fields: [userId], references: [id])
+  userId         String
+  type           String
+  amount         Float           // Positive for CREDIT_ADD, negative for USAGE
+  modelUsed      String?
+  inputTokens    Int?
+  outputTokens   Int?
+  createdAt      DateTime        @default(now())
+}
+
+
+
+model Session {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  role      String
+  content   String
+  tokens    Int?
+  createdAt DateTime @default(now())
+}
+
+
