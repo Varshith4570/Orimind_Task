@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Check, X, Zap } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -42,7 +43,6 @@ export default function PricingPage() {
         name: 'EXAMPLE.ai',
         description: 'Pro Plan - 100 Credits/month',
         order_id: order.id,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         handler: async function (response: any) {
           try {
             const verifyRes = await api.post('/billing/verify-payment', {
@@ -54,7 +54,7 @@ export default function PricingPage() {
               addToast('Payment successful! You are now a PRO user.', 'success');
               router.push('/billing');
             }
-          } catch {
+          } catch (e: any) {
             addToast('Payment verification failed.', 'error');
           }
         },
@@ -62,9 +62,7 @@ export default function PricingPage() {
         theme: { color: '#7c6af7' }
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const rzp = new (window as any).Razorpay(options);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       rzp.on('payment.failed', function (response: any){
         addToast(response.error.description || 'Payment Failed', 'error');
         setIsLoading(false);

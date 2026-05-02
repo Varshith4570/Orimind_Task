@@ -32,11 +32,8 @@ export const authOptions: NextAuthOptions = {
             };
           }
           throw new Error(data.message || "Authentication failed");
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(error.message);
-          }
-          throw new Error("Authentication failed");
+        } catch (error: any) {
+          throw new Error(error.message);
         }
       }
     })
@@ -48,12 +45,12 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = (user as import("next-auth").User & { accessToken?: string }).accessToken;
+        token.accessToken = (user as any).accessToken;
       }
       return token;
     },
     async session({ session, token }) {
-      (session as import("next-auth").Session & { accessToken?: unknown }).accessToken = token.accessToken;
+      (session as any).accessToken = token.accessToken;
       return session;
     }
   },

@@ -24,7 +24,7 @@ export class BillingService {
       const options = {
         amount: amount * 100, 
         currency: 'INR',
-        receipt: `receipt_${userId}_${Date.now()}`,
+        receipt: `rcpt_${userId.substring(0, 8)}_${Date.now().toString().slice(-8)}`,
       };
 
       const key = this.configService.get<string>('RAZORPAY_KEY_ID');
